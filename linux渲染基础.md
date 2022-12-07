@@ -93,13 +93,17 @@ GPU的计算单元包含可变指令执行模块以及vector运算单元，每�
 
 ___
 ### EGL
+EGL provides mechanisms for creating rendering surfaces onto which client APIs can draw, creating graphics contexts for client APIs, and synchronizing draw-ing by client APIs as well as platform rendering APIs
 
 EGL是对用户空间可见的一组显卡功能、资源的API接口。比如GEM内存对象会有对应的Handle，通过EGL可以实现在不同的进程间通过此Handle共享显存。在音视频的处理中，使用GPU处理后的视频数据在显存中，如果使用硬编则可以考虑直接将显存数据对应的Handle传递给GPU的编码模块，此时可能就需要使用EGL。
-
+[EGL官网](https://registry.khronos.org/EGL/)
 [EGL标准1.5](https://registry.khronos.org/EGL/specs/eglspec.1.5.pdf)
 
 使用方式：通过glad库引入libEGL.so或者libEGL.dll中导出的函数或者符号。libEGL.so可以通过安装mesa 3D的SDK获得。
 
+##### EGLDisplay
+This represents the abstract display on which graphics are drawn. In most environments a display corresponds to a single physical screen.
+All EGL objects are associated with an EGLDisplay, and exist in a names-pace defined by that display. Objects are always specified by the combination of an EGLDisplay parameter with a parameter representing the handle of the object.
 
 ___
 ### Mesa (Mesa 3D)
