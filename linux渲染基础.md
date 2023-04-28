@@ -107,7 +107,7 @@ All EGL objects are associated with an EGLDisplay, and exist in a names-pace def
 
 ___
 ### Mesa (Mesa 3D)
-[介绍-Wikipedia](https://en.wikipedia.org/wiki/Mesa_(computer_graphics)
+[介绍-Wikipedia](https://en.wikipedia.org/wiki/Mesa_(computer_graphics))
 Mesa, also called Mesa3D and The Mesa 3D Graphics Library, is an open source implementation of OpenGL, Vulkan, and other graphics API specifications. Mesa translates these specifications to vendor-specific graphics hardware drivers.
 
 Mesa implements a translation layer between a graphics API such as OpenGL and the graphics hardware drivers in the operating system kernel. 
