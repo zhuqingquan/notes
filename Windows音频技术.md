@@ -74,3 +74,15 @@ ___
 ### Windows Audio Session API (WASAPI)
 ### DeviceTopology API
 ### EndpointVolume API
+
+## 虚拟音频设备(Virtual Audio Cable)
+#### 可用的软件
+[软件-VAC](https://vac.muzychenko.net/en/)
+[VB-CABLE Virtual Audio Device](https://vb-audio.com/Cable/)
+
+#### 开源源码参考
+[HSpear/virtual-audio-wire](https://github.com/HSpear/virtual-audio-wire/tree/master)
+[syams86/Virtual-Audio-Pipeline](https://github.com/syams86/Virtual-Audio-Pipeline/tree/master)
+
+#### Windows API
+[api-portcls](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/portcls/)
