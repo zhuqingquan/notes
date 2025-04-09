@@ -13,4 +13,6 @@
 docker ps
 # 列出本机所有的镜像
 docker images
+# 进入正在运行的docker内，并运行一个新的终端
+sudo docker exec -it <docker id> /bin/bash
 ```
