@@ -59,6 +59,13 @@ from threading import Thread
 init_thread = Thread(target=self.__InitGeneratorLoadRes, args=[opts, initial_model_now])
 init_thread.start()
 
+# 线程池
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(max_workers=5) as t:  # 创建一个最大容纳数量为5的线程池
+    task1 = t.submit(spider, 2)  # 通过submit提交执行的函数到线程池中
+    print(f"task1: {task1.done()}")  # 通过done来判断线程是否完成
+    print(task1.result())  # 通过result来获取返回值
+
 # 锁
 from threading import RLock
 lock_init = RLock()
@@ -80,6 +87,13 @@ try:
 except Exception as ex:
     app_logger.error(f'start process with exception. cmd={process.cmd} {ex}')
 ```
+
+### asyncio event_loop 协程
+1. event loop 就是一个普通 Python 对象，您可以通过 asyncio.new_event_loop() 创建无数个 event loop 对象
+2. 想运用协程，首先要生成一个loop对象，然后loop.run_xxx()就可以运行协程了
+3. 有两种方法创建event_loop对象：对于主线程是loop=get_event_loop(). 对于其他线程需要首先loop=new_event_loop(),然后set_event_loop(loop)。
+4. 局部的小操作或者只有一个线程的简单测试代码用起来方便一些，但是如果需要使用线程执行各种操作，还是开新线程。特别是在api中需要更加谨慎。
+5. 协程中尽量不要使用`time.sleep(t)`，因为这个调用会阻塞整个线程，线程绑定的event loop中运行的所有协程其实都得不到CPU资源，因为相对于这些协程来说，`time.sleep(t)`并没有挂起并让出资源。需要使用`await asyncio.wait(t)`
 
 ### 时间相关
 
@@ -473,6 +487,7 @@ L\[:] 复制整个列表
 
 *   linux下修改.bashrc初始化anaconda
 
+```
     # >>> conda initialize >>>
 
     # !! Contents within this block are managed by 'conda init' !!
@@ -490,10 +505,10 @@ L\[:] 复制整个列表
     unset \_\_conda\_setup
 
     # <<< conda initialize <<<
-
+```
 *   设置conda启动时不直接activate
 
-    conda config --set auto\_activate\_base false
+    ```conda config --set auto\_activate\_base false```
 
 #### 将conda env迁移到另一台机
 
