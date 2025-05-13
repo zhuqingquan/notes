@@ -553,6 +553,14 @@ L\[:] 复制整个列表
     ## as long as some version of Python is already installed on the machine.
     (my_env) $ conda-unpack
 
+#### linux下将整个anaconda3文件夹迁移到其他磁盘
+首先复制整个文件夹，再创建软链接。
+```
+cp -r ~/anaconda3 /extended_disk/anaconda3
+rm -r ~/anaconda3
+ln -s /extended_disk/anaconda3 ~/anaconda3  	# 添加软连接，注意修改自己的目录
+```
+
 #### pip
 
 更新pip的源为清华的
