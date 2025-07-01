@@ -131,12 +131,17 @@ pkt.pts = (double)(frame_index*calc_duration) / (double)(av_q2d(time_base1)*AV_T
 + 启动时崩溃
     1. 使用ffmpeg3.3.1版本，编译生成exe一切正常，但是只要一调用ffmpeg程序就崩溃，从Modules的加载来看，没有成功加载ffmpeg的DLL。
 设置项目配置-->Linker-->Optimization-->References值为Eliminate Unreferenced Data (/OPT:REF)时将导致崩溃
-    2. ==linux下编译使用静态库时，链接出错，错误信息如下==
++ ==linux下编译使用静态库时，链接出错，错误信息如下==
     ```
     libavcodec.a(vc1dsp_mmx.o): relocation R_X86_64_PC32 against symbol `ff_pw_9' can not be used when making a shared object; recompile with -fPIC
     ```
-    这是因为使用的ffmpeg静态库与头文件不是匹配的。
-    3. 
+    可能的原因有：
+
+        - 使用的ffmpeg静态库与头文件不是匹配的。
+        - 在编译动态库so时链接ffmpeg静态库会报上面的错误，如果直接编译so时不进行链接，而是在构建可执行程序时再链接ffmpeg的静态库就不会报这个链接错误。
++ sws_scale并不是线程安全的。
+如果有多个线程使用同一个SwsContext对象调用sws_scale，则可能崩溃。即使处理的是不同的帧也会。如果的确要使用多线程去调用sws_scale，则可以考虑创建多个SwsContext对象， 每个线程使用一个。
+
 ## 代码变更
 + 3.x之前版本所用的AVStream.codec已经废弃。[参考](https://blog.51cto.com/fengyuzaitu/1983001)
  
@@ -215,7 +220,10 @@ ffmpeg -f x11grab -select_region 1 -show_region 1 -framerate 25 -i $DISPLAY -vf 
 ```
 windows将捕抓摄像头+麦克风数据编码成mp4
 ```
+# Windows
 ffmpeg -f dshow -i video="Integrated Camera":audio="麦克风阵列 (适用于数字麦克风的英特尔® 智音技术)" -vcodec "h264_nvenc" rec_camera.mp4
+# linux v4l2
+ffmpeg -f v4l2 -i /dev/video0 -vcodec libx264 ~/record.mp4
 ```
 将普通2D视频转换成左右3D视频
 ```
