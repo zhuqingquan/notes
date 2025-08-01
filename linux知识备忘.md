@@ -1062,6 +1062,15 @@ readelf -d xxx.so | grep NEEDED
     sudo cp ~/Downloads/*.ttf /usr/share/fonts
     sudo fc-cache -f -v
 
+#### 字体文件的配置文件
+`/etc/fonts/conf.d/64-language-selector-prefer.conf`
+这个文件中配置了默认的字体，比如中文、日文、韩文等。
+在使用libass库时，如果渲染是指定了font family，但是某个字符在指定的font family的字体文件中找不到graphy，则libass一般会自动回退到使用此配置文件配置的字体进行渲染。如果此配置文件中配置的字体不存在或者也不包含那个graphy，则可能会渲染乱码。
+
+#### 开源字体
+[noto-cjk](https://github.com/notofonts/noto-cjk)
+[noto](https://github.com/notofonts/notofonts.github.io/)
+
 ### 屏幕显示相关
 
 #### 屏幕旋转后配置触控屏
