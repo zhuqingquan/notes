@@ -342,6 +342,7 @@ xargs是实现“将标准输入作为命令的参数”
 du -lh | awk '{if(match($1, "G")>0) print $2}' | xargs ls -l
 ```
 
+## 网络相关
 #### FTP服务
 
 [安装教程](https://blog.csdn.net/weixin_45309916/article/details/107855067)
@@ -369,6 +370,25 @@ Service的启动描述文件：/usr/lib/systemd/system/vsftpd.service
     iftop -i eth0
     // 查看端口占用
     netstat -anp | grep 6039
+
+### 使用nmcli进行网络配置
+[简单教程](https://www.runoob.com/linux/linux-comm-nmcli.html)
+常用命令
+```sh
+nmcli device status
+# 显示所有连接状态
+nmcli connection show
+# 显示单个连接详细信息
+nmcli connection show <id>
+# 启动与停止连接
+nmcli connection up <id>
+nmcli connection down <id>
+# 修改connection的单个属性值
+nmcli connection modify <id> ipv4.method <shared | auto>
+systemctl restart NetworkManager
+```
+
+***
 
 #### 虚拟机性能
 
@@ -753,7 +773,7 @@ Add the swap file details to /etc/fstab so it will be available at bootup:
     echo '/mnt/1GiB.swap swap swap defaults 0 0' | sudo tee -a /etc/fstab
 
 ### 查看各种信息
-
+```shell
     // 查看内核版本信息
     uname -r
     uname -a
@@ -765,10 +785,22 @@ Add the swap file details to /etc/fstab so it will be available at bootup:
     lscpu
     // 查看有线网卡型号
     lspci | grep -i ethernet
-
-### 查看内存
-
+    // 查看内存
     free -h
+```
+#### arm或者嵌入式linux系统查看各种信息
+[Android使用adb命令查看APP数据流量使用情况](https://www.cnblogs.com/liyuanhong/articles/11376302.html#:~:text=%E5%9C%A8Android%E7%B3%BB%E7%BB%9F%E4%B8%AD%EF%BC%8C%22%2Fproc%2Fnet%2Fxt_qtaguid%2Fstats%22%E8%BF%99%E4%B8%AA%E6%96%87%E4%BB%B6%E9%87%8C%E5%82%A8%E5%AD%98%E7%9D%80%E5%90%84%E4%B8%AA%E5%BA%94%E7%94%A8%E7%9A%84%E6%B5%81%E9%87%8F%E4%BF%A1%E6%81%AF%EF%BC%8C%E7%BB%9F%E8%AE%A1%E6%B5%81%E9%87%8F%E7%9A%84%E6%97%B6%E5%80%99%E5%8F%AF%E4%BB%A5%E7%94%A8%E5%88%B0%E8%BF%99%E4%B8%AA%E6%96%87%E4%BB%B6%E3%80%82,android4.0%E4%BB%A5%E4%B8%8A%E7%89%88%E6%9C%AC%E5%8F%AF%E4%BB%A5%E7%94%A8%2Fproc%2Fuid_stat%2F%24uid%2Ftcp_rcv%E5%92%8C%2Fproc%2Fuid_stat%2F%24uid%2Ftcp_snd%E6%9D%A5%E8%8E%B7%E5%8F%96%E6%9F%90%E4%B8%AA%E7%A8%8B%E5%BA%8F%E7%9A%84%E4%B8%8A%E4%B8%8B%E8%A1%8C%E6%B5%81%E9%87%8F%EF%BC%9B%E8%80%8C4.0%E4%BB%A5%E4%B8%8B%E7%89%88%E6%9C%AC%E8%A6%81%E7%94%A8cat%2Fproc%2F%24pid%2Fnet%2Fdev%E6%9D%A5%E6%9F%A5%E7%9C%8B%E4%B8%8A%E4%B8%8B%E8%A1%8C%E6%B5%81%E9%87%8F%E3%80%82)
+```shell
+# 查看CPU使用率
+top
+# 查看GPU使用率
+cat /sys/class/devfreq/fb000000.gpu/load
+# 查看NPU使用率
+cat /sys/class/devfreq/fdab0000.npu/load
+# 查看网络进出流量
+ cat /proc/pid/net/dev
+ cat /sys/class/net/wlan0/statistics/rx_bytes
+```
 
 [关于查看内存硬件信息 参考](https://blog.csdn.net/kaikai_sk/article/details/84752550)
 
@@ -848,8 +880,39 @@ xvfb是linux下的虚拟屏幕。当程序运行在linux server，且需要使�
     sudo apt-get install xserver-xorg-core xserver-xorg xorg xauth openbox
 
 ### 安装x-client
-
+```
     suo apt install ubuntu-desktop
+```
+
+### 解决机器启动后无法进入UI界面
+表现：开机启动后，无法进入UI登录界面，卡在输出内核加载信息的过程打印中，一直无法进入。
+原因：显卡驱动与nouveau驱动不兼容导致无法加载显卡驱动。显卡是NVIDIA的。
+处理方式：
+1. 重启电脑，在 GRUB 启动菜单选择 Advanced options for Ubuntu
+2. 选择 Recovery mode
+3. 选择 root (Drop to root shell prompt)。这样可以进入命令行模式。
+4. ==完全移除 Nouveau 驱动。==(这步很重要)  更新 initramfs
+```shell
+# 删除所有 Nouveau 相关包
+sudo apt purge xserver-xorg-video-nouveau libdrm-nouveau2
+
+# 确保 Nouveau 被列入黑名单
+echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist-nouveau.conf
+echo "options nouveau modeset=0" | sudo tee -a /etc/modprobe.d/blacklist-nouveau.conf
+# 更新初始化内存盘
+sudo update-initramfs -u
+# 设置grub完全禁用nouveau
+# 编辑 GRUB 配置
+sudo nano /etc/default/grub
+
+# 找到 GRUB_CMDLINE_LINUX_DEFAULT 行，添加：
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash nouveau.modeset=0"
+
+# 更新 GRUB
+sudo update-grub
+```
+5. 重新安装NVIDIA显卡驱动，可以不用卸载再装，直接覆盖。
+6. 重启系统。
 
 ***
 
@@ -994,9 +1057,14 @@ readelf -d xxx.so | grep NEEDED
     start-stop-daemon --stop --name Xvfb
 
 ##### 清理
-
+```shell
     #清理.cache文件夹下超过90天的文件
     find ~/.cache/ -type f -atime +90 -delete
+    # 清理/var/log/syslog
+    sudo rm -f /var/log/syslog
+    sudo systemctl restart rsyslog.service
+    # 如果要限制syslog大小，则可以修改文件/etc/logrotate.d/rsyslog
+```
 
 ##### 解决sudo部分命令找不到的问题
 

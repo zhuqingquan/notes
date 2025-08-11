@@ -41,6 +41,13 @@ cmake --build .
 ```
 
 ### 函数
+| 函数名 | 功能 | 参考 | 示例 |
+| ---- | ---- | ---- | ---- |
+| arcLength | 计算 轮廓的周长 | | |
+| approxPolyDP | 生成逼近曲线 | [1](https://www.cnblogs.com/bjxqmy/p/12347265.html) | |
+| watershed | 基于分水岭算法的图像分割 | [api](https://docs.opencv.org/4.x/d3/d47/group__imgproc__segmentation.html#ga3267243e4d3f95165d55a618c65ac6e1) <br> [例子](https://docs.opencv.org/4.x/d2/dbd/tutorial_distance_transform.html) <br> [基于分水岭算法的图像分割](https://www.bookstack.cn/read/opencv-doc-zh-4.0/docs-4.0.0-4.15-tutorial_py_watershed_segmentation.md) | |
+|  findContours | | [api说明](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) | |
+|  drawContours | | [api说明](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) | |
 ### 类
 | 类名 | 功能 | 方法 | 示例 |
 | ---- | ---- | ---- | ---- |

@@ -107,6 +107,16 @@ sudo apt-get update -qq && sudo apt-get -y install \
   make install
 ```
 
+### 交叉编译到arm linux
+```
+./configure --prefix=./output-arm-linux --disable-postproc --disable-shared --enable-static --disable-doc --cross-prefix=arm-linux-gnueabihf- --target-os=linux --arch=arm --cpu=arm7 --enable-cross-compile  --disable-libx264 --cc=/home/xmagic/project/xmagic_sdk/tools/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-gcc --cxx=/home/xmagic/project/xmagic_sdk/tools/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-g++ --nm=/home/xmagic/project/xmagic_sdk/tools/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-nm --disable-asm
+make -j12
+make install
+```
+说明：
+-  valid arguments to ‘-mcpu=’ are: arm1020e arm1020t arm1022e arm1026ej-s arm10e arm10tdmi arm1136j-s arm1136jf-s arm1156t2-s arm1156t2f-s arm1176jz-s arm1176jzf-s arm2 arm250 arm3 arm6 arm60 arm600 arm610 arm620 arm7 arm70 arm700 arm700i arm710 arm7100 arm710c arm710t arm720 arm720t arm740t arm7500 arm7500fe arm7d arm7di arm7dm arm7dmi arm7m arm7tdmi arm7tdmi-s arm8 arm810 arm9 arm920 arm920t arm922t arm926ej-s arm940t arm946e-s arm966e-s arm968e-s arm9e arm9tdmi cortex-a12 cortex-a15 cortex-a15.cortex-a7 cortex-a17 cortex-a17.cortex-a7 cortex-a32 cortex-a35 cortex-a5 cortex-a53 cortex-a57 cortex-a57.cortex-a53 cortex-a7 cortex-a72 cortex-a72.cortex-a53 cortex-a8 cortex-a9 cortex-m0 cortex-m0.small-multiply cortex-m0plus cortex-m0plus.small-multiply cortex-m1 cortex-m1.small-multiply cortex-m3 cortex-m4 cortex-m7 cortex-r4 cortex-r4f cortex-r5 cortex-r7 cortex-r8 ep9312 exynos-m1 fa526 fa606te fa626 fa626te fa726te fmp626 generic-armv7-a iwmmxt iwmmxt2 marvell-pj4 mpcore mpcorenovfp native qdf24xx strongarm strongarm110 strongarm1100 strongarm1110 xgene1 xscale
+- 之所以使用--disable-asm选项进行configure，是因为使用了asm之后libavcodec有些编译错误。
+- **上面--cc --nm --cxx 都指定了绝对路径，其实也可以设置`--cross-prefix=<绝对路径>/arm-linux-gnueabihf-`，这样可能就不在需要单独设置--cc --cxx --nm**
 ## 编码
 ### 音频编码AAC
 1. 编码AAC时如果使用avcodec_find_encoder_by_name("libfdk_aac");返回nullptr，这是因为编译ffmpeg时没有使用libfdk库。这种情况需要重新编译生成ffmpeg库。在configure时添加以下参数
@@ -246,6 +256,10 @@ Ffmpeg -i video.mp4 -i subtitle.ass -c:v copy -c:a copy -c:s ass -y dest.mkv
 ffplay -f video4linux2 /dev/video0
 # 打印摄像头支持的格式
 ffplay -f video4linux2 -list_formats all /dev/video0
+# 录制摄像头内容，保存成文件
+ffmpeg -f v4l2 -i "/dev/video0" rec.mp4
+```
+
 
 # 使用ffplay查看yuv文件
 //  -x 1280 -y 360 可指定显示的窗口大小
@@ -253,7 +267,6 @@ ffplay -f rawvideo -pixel_format nv21 -video_size 1280x960 testCame_1280x960_2.y
 
 # 是用ffplay播放PCM文件
 ffplay -ar 44100 -channels 2 -f s16le -i ~/Downloads/capture_audio.pcm
-```
 #### 特效命令行
 [zoompan的使用例子](https://blog.csdn.net/linzhiji/article/details/133020028)
 ```
