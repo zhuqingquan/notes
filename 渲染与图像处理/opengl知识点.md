@@ -435,6 +435,10 @@ glGenerateMipmap(tex.texture->glTexTarget());
 2. 优缺点
 加入mipmap，在渲染曲线时，曲线将变得更加平滑，字体也会更平滑。缺点是：整个画面的对比度看起来下降了，看起来效果是画面感觉更模糊了。
 
+### 抗锯齿
+#### MSAA
+[LearnOpenGL-抗锯齿](https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/11%20Anti%20Aliasing/)
+[anti_aliasing_offscreen.cpp](https://learnopengl.com/code_viewer_gh.php?code=src/4.advanced_opengl/11.2.anti_aliasing_offscreen/anti_aliasing_offscreen.cpp)
 ___
 ## 着色器Shader
 ### uniform变量相关

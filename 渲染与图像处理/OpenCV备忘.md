@@ -47,7 +47,9 @@ cmake --build .
 | approxPolyDP | 生成逼近曲线 | [1](https://www.cnblogs.com/bjxqmy/p/12347265.html) | |
 | watershed | 基于分水岭算法的图像分割 | [api](https://docs.opencv.org/4.x/d3/d47/group__imgproc__segmentation.html#ga3267243e4d3f95165d55a618c65ac6e1) <br> [例子](https://docs.opencv.org/4.x/d2/dbd/tutorial_distance_transform.html) <br> [基于分水岭算法的图像分割](https://www.bookstack.cn/read/opencv-doc-zh-4.0/docs-4.0.0-4.15-tutorial_py_watershed_segmentation.md) | |
 |  findContours | | [api说明](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) | |
-|  drawContours | | [api说明](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) | |
+|  drawContours | 根据轮廓数据在图像上绘制轮廓线条或填充轮廓。 | [api说明](https://docs.opencv.org/3.4/d4/d73/tutorial_py_contours_begin.html) | |
+| threshold | 二值化函数 | [API说明](https://docs.opencv.org/3.4/d7/d4d/tutorial_py_thresholding.html) | |
+| 几何绘制 | 绘制直线、矩形、圆等 | [api](https://docs.opencv.org/4.x/dc/da5/tutorial_py_drawing_functions.html) | |
 ### 类
 | 类名 | 功能 | 方法 | 示例 |
 | ---- | ---- | ---- | ---- |
