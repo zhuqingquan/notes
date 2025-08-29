@@ -93,6 +93,20 @@ auto [x, y, z] = f();
 ### 定义已std::initializer_list为参数的构造函数因谨慎
 因为std::initializer_list为参数的构造函数将屏蔽掉大部分其他的构造函数，当用户使用{}进行对象初始化时。
 
+## std::optional<T>
+[介绍](https://blog.csdn.net/haokan123456789/article/details/136099479)
+
+## std::any
+是一个可用于任何类型单个值的类型安全的容器。std: any是一种值类型，它能够更改其类型，同时仍然具有类型安全性。也就是说，对象可以保存任意类型的值，但是它们知道当前保存的值是哪种类型。在声明此类型的对象时，不需要指定可能的类型。
+小结
+std::any a = 1;: 声明一个any类型的容器，容器中的值为int类型的1
+a.type(): 得到容器中的值的类型
+std::any_cast(a);: 强制类型转换, 转换失败可以捕获到std::bad_any_cast类型的异常
+has_value(): 判断容器中是否有值
+reset(): 删除容器中的值
+std::any_cast(&a): 强制转换得到容器中的值的地址
+[介绍](https://www.cnblogs.com/gnivor/p/12793239.html)
+
 ## 时间相关
 ```
 // 获取当前系统时间的毫秒数

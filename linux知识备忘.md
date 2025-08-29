@@ -1026,7 +1026,7 @@ readelf -d xxx.so | grep NEEDED
 
 ***
 
-## 进程相关
+### 进程相关
 
     # 按名称找到进程
     ps -ef | grep 'nginx'
@@ -1158,6 +1158,72 @@ readelf -d xxx.so | grep NEEDED
 
     sudo apt-get install xinput-calibrator
 
+#### 工作区配置
+1. 安装gnome-tweaks通过GUI进行控制
+```shell
+# 安装
+sudo apt install gnome-tweaks
+# 直接命令行输入启动
+gnome-tweaks
+```
+
+2. 通过命令gsettings设置
+```shell
+# 获取gnome是否支持动态工作区个数
+gsettings get org.gnome.mutter dynamic-workspaces
+# 配置是否开启动态工作区 true--开启 false--关闭
+gsettings set org.gnome.mutter dynamic-workspaces true
+# 设置与获取工作区个数，可以设置为1，然后通过配置
+gsettings get org.gnome.desktop.wm.preferences num-workspaces
+gsettings set org.gnome.desktop.wm.preferences num-workspaces 1
+```
+
+#### 禁用触摸屏或者触摸板的手势动作
+```shell
+# 禁用触摸屏手势动作
+gsettings set org.gnome.desktop.peripherals.touchscreen:/usr/share/glib-2.0/schemas/ send-events 'disabled'
+# 上面命令可能因为/usr/share/glib-2.0/schemas/下没有org.gnome.desktop.peripherals.touchscreen相关的配置而失败
+# 此时可以创建文件 sudo vim /usr/share/glib-2.0/schemas/99-custom-touchscreen.gschema.override
+sudo vim /usr/share/glib-2.0/schemas/99-custom-touchscreen.gschema.override
+# 文件内容如下：
+[org.gnome.desktop.peripherals.touchscreen]
+send-events='disabled'
+# 重新编译gschemas
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+# 这样编译也可能出现如下错误：
+# No such key “send-events” in schema “org.gnome.desktop.peripherals.touchscreen” as specified in override file “/usr/share/glib-2.0/schemas/99-custom-touchscreen.gschema.override”; ignoring override for this key.
+# 这种情况下可以通过grep touchscreen /usr/share/glib-2.0/schemas/*找到touchscreen是在哪个文件配置，然后修改那个文件的配置。比如：
+sudo vim /usr/share/glib-2.0/schemas/org.gnome.desktop.peripherals.gschema.xml
+#在touchscreen相关的配置中添加以下内容：
+    <key name="send-events" enum="org.gnome.desktop.GDesktopDeviceSendEvents">
+      <default>'enabled'</default>
+      <summary>Touchpad enabled</summary>
+      <description>Defines the situations in which the touchpad is enabled.</description>
+    </key>
+# 再次complie schemas
+sudo glib-compile-schemas /usr/share/glib-2.0/schemas/
+# 通过list-keys、get确认修改生效
+gsettings list-keys org.gnome.desktop.peripherals.touchscreen:/usr/share/glib-2.0/schemas/
+gsettings get org.gnome.desktop.peripherals.touchscreen:/usr/share/glib-2.0/schemas/ send-events
+```
+
+#### gsettings的其他命令
+```shell
+# 列出所有的schema
+gsettings list-schemas
+# 获取schemas下面的所有的key
+gsettings list-keys org.gnome.desktop.peripherals.touchpad
+# 获取schemas下的keys的值
+gsettings list-recursively org.gnome.desktop.peripherals.touchpad
+```
+
+### 禁止特定用户使用sudo -i或者sudo su
+以root修改文件内容 /etc/sudoers
+```shell
+sudo visudo
+# 修改以下内容
+xmagic ALL=(ALL) NOPASSWD: !/bin/bash, !/bin/sh, !/bin/su, !/usr/bin/sudo -i, !/usr/bin/sudo su
+```
 ### 硬盘深拷贝
 ```
     可先用`fdisk -lh`查看需要复制的磁盘和目标磁盘
@@ -1199,6 +1265,15 @@ cp /usr/share/applications/tmeta.desktop ~/.config/autostart
 sudo chmod a+x ~/.config/autostart/tmeta.desktop
 ```
 
+### 设置开机自动登录
+修改文件：`/etc/gdm3/custom.conf`
+```
+# 修改以下内容 true--开启自动登录 false--关闭自动登录
+[daemon]
+AutomaticLoginEnable=true
+```
+
+sudo 
 ***
 ### 设置生成coredump
 

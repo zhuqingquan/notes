@@ -137,6 +137,11 @@ make install
 + 每帧的时间增量   duration_ffmpeg = AV_TIME_BASE / frame_rate， 单位为微秒。 
 pkt.pts = (double)(frame_index*calc_duration) / (double)(av_q2d(time_base1)*AV_TIME_BASE)
 
+
+## 协议、流、文件格式
+### webrtc
+[metaRTC-支持webrtc的ffmpeg版本](https://gitee.com/metartc/ffmpeg-webrtc)
+
 ## 项目经验
 + 启动时崩溃
     1. 使用ffmpeg3.3.1版本，编译生成exe一切正常，但是只要一调用ffmpeg程序就崩溃，从Modules的加载来看，没有成功加载ffmpeg的DLL。
@@ -203,6 +208,11 @@ ffmpeg -y -i "rtmp://beauty-tx-rtmp.meituan.net/mtlr/1130991_1141ef_641c29bc00f1
 ```
 混画
 ```
+# 左右分屏显示2个文件
+ffmpeg -i D:\data_for_test\绿牌蓝底\1.mp4 -i "D:\临时调试\20250804\output-4 (12).mp4" -filter_complex "[0:v][1:v]hstack=inputs=2" -c:v libx264 -preset fast -crf 23 "D:\临时调试\20250804\merge-1.mp4"
+# 将一个视频叠加在另一个视频上面显示，并且在上层的视频半透明
+# 参数解析 '[1:v]format=bgra,colorchannelmixer=aa=0.5[transparent];'的意思是将序号为1的输入视频转换为bgra格式，并且颜色通道混画时透明通道aa=0.5，处理后的视频使用transparent标记，以供后面overlay filter使用
+ffmpeg -i ~/data_for_test_xmagicsdk/android/25064_15097/test/output.mp4 -i %d.jpg -filter_complex "[1:v]format=bgra,colorchannelmixer=aa=0.5[transparent];[0:v][transparent]overlay=380:-30" -c:v libx264  -r 25 ff.mp4
 # 将argb数据文件叠加在jpeg的背景上面
 ffmpeg -i D:\59b05ab48bf73e56d41e638e8413f699.jpg -f rawvideo -pixel_format rgba -video_size 748x960 -i D:\dump_ai_org-101879.rgb -filter_complex "[1:v]scale=w=748:h=960:force_original_aspect_ratio=decrease[ckout];[0:v][ckout]overlay=x=W-w-10:y=0[out]" -map "[out]" -movflags faststart a.mp4
 ```
