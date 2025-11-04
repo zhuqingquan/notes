@@ -255,6 +255,12 @@ sudo update-alternatives --config python
 
 #### 安装特定版本内核
 
+查看内核的更新记录，有助于判断是否是内核更新引入的问题
+```
+cat /var/log/dpkg.log | grep "linux-image"
+```
+
+
 [参考](https://zhuanlan.zhihu.com/p/133323571)
 [命令行安装](https://www.cnblogs.com/carle-09/p/12377128.html#:\~:text=ubuntu---%E6%9F%A5%E7%9C%8B%E3%80%81%E5%AE%89%E8%A3%85%E3%80%81%E5%88%87%E6%8D%A2%E5%86%85%E6%A0%B8%20%E9%A6%96%E5%85%88%E5%8F%AF%E4%BB%A5%E6%9F%A5%E7%9C%8B%E4%B8%80%E4%B8%8B%E5%86%85%E6%A0%B8%E5%88%97%E8%A1%A8%EF%BC%9Asudo%20dpkg%20--get-selections%20%7C%20grep%20linux-image%20%E6%9F%A5%E7%9C%8BLinux%E4%B8%AD%E5%AE%89%E8%A3%85%E4%BA%86%E5%93%AA%E4%BA%9B%E5%86%85%E6%A0%B8%EF%BC%9A,%7C%20grep%20linux%20%E6%88%96%E8%80%85%20dpkg%20--list%20%7Cgrep%20linux)
 
@@ -264,16 +270,28 @@ sudo update-alternatives --config python
 ```shell
 sudo dpkg -i linux-image-unsigned-5.15.0-051500rc7-generic_5.15.0-051500rc7.202110251930_amd64.deb linux-modules-5.15.0-051500rc7-generic_5.15.0-051500rc7.202110251930_amd64.deb
 ```
-
-1.  安装完成后查看是否安装成功
-
-    sudo dpkg --get-selections | grep linux-
-
-1\.
+3.  安装完成后查看是否安装成功 ` sudo dpkg --get-selections | grep linux-image `
 
 #### 安装当前的kernel header
 
 <https://www.tecmint.com/install-kernel-headers-in-ubuntu-and-debian/#:~:text=Then%20run%20the%20following%20command%20that%20follows%20to,following%20command%20%24%20ls%20-l%20%2Fusr%2Fsrc%2Flinux-headers-%24%20%28uname%20-r%29>
+
+
+#### 卸载内核版本
+```
+# 查看已安装的linux-image linux-module的具体版本号
+sudo dpkg --list | grep linux-module
+sudo dpkg --list | grep linux-image
+# 根据上面的信息，删除具体的内核版本
+sudo apt purge linux-image-xxx
+sudo apt purge linux-module-xxx
+```
+
+#### 关闭、打开内核版本自动更新
+```
+sudo apt-mark hold linux-image-generic linux-headers-generic
+sudo apt-mark unhold linux-image-generic linux-headers-generic
+```
 
 #### 切换TTY与打开关闭x server图像界面
 
@@ -360,6 +378,23 @@ sudo /etc/init.d/vsftpd restart
 
 Service的启动描述文件：/usr/lib/systemd/system/vsftpd.service
 
+#### sftp客户端命令
+```shell
+# 使用用户名+主机ip或者主机名进行连接登录
+sftp user_name@host
+# 登录后直接通过ls、cd、pwd、mkdir命令操作目录
+操作远程主机目录：ls、cd、pwd、mkdir、rm、chmod
+操作本地主机目录：lls、lcd、lpwd、lmkdir、lrm、lchmod
+# 上传文件到远程服务器
+put 本地文件 [远程路径]	
+# 从远程服务器下载文件
+get 远程文件 [本地路径]
+# 使用通配符传输多个文件
+mput *.jpg      # 上传所有jpg文件
+# 下载整个目录（递归）
+sftp -r user@example.com:/backups /local/backups
+```
+
 #### 网络命令汇总
 
     //显示路由表
@@ -388,6 +423,17 @@ nmcli connection modify <id> ipv4.method <shared | auto>
 systemctl restart NetworkManager
 ```
 
+#### WiFi无法上网
+sudo systemctl status wpa_supplicant.service
+sudo systemctl restart wpa_supplicant.service
+
+This solved the error with my RTL8188 USB WiFi adapter.
+And changed the /usr/lib/systemd/system/wpa_supplicant@.service accordingly.
+
+ExecStart=/usr/bin/wpa_supplicant -Dwext -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+
++ 使用`sudo dmesg |grep -i iwlwifi`看到以下错误信息：
+FW error in SYNC CMD REDUCE_TX_POWER_CMD
 ***
 
 #### 虚拟机性能
@@ -1078,6 +1124,10 @@ readelf -d xxx.so | grep NEEDED
 <https://zhuanlan.zhihu.com/p/694832548>
 
 *   [linux-firmware硬件固件](https://gitlab.com/kernel-firmware/linux-firmware)
+```
+# 手动更新firmware
+sudo cp -r ~/linux-firmware/* /lib/firmware/
+```
 
 #### ubuntu删除安装失败了的软件包
 
