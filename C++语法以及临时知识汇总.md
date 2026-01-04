@@ -558,6 +558,14 @@ struct alignas(std::max_align_t) AlignStorage
 ```
 
 ### thread and future
+一个 std::future 对象只有在有效(valid)的情况下才有用(useful)，由 std::future 默认构造函数创建的 future 对象不是有效的（除非当前非有效的 future 对象被 move 赋值另一个有效的 future 对象）。
+在一个有效的 future 对象上调用 get 会阻塞当前的调用者，直到 Provider 设置了共享状态的值或异常（此时共享状态的标志变为 ready），std::future::get 将返回异步任务的值或异常（如果发生了异常）。
+
+一个有效(valid)的 std::future 对象通常由以下三种 Provider 创建，并和某个共享状态相关联。Provider 可以是函数或者类，其实我们前面都已经提到了，他们分别是：
+std::async 函数，本文后面会介绍 std::async() 函数。
+std::promise::get_future，get_future 为 promise 类的成员函数，详见 C++11 并发指南四(<future> 详解一 std::promise 介绍)。
+std::packaged_task::get_future，此时 get_future为 packaged_task 的成员函数
+
 可以使用future获取线程的返回值，这样可以产生类似c#的await的用法。
 ```c++
 // thread and future
@@ -573,6 +581,7 @@ void testThreadAndFuture()
     std::cout << "Task thread done. Result: " << ft.get() << std::endl;
 }
 ```
+https://www.cnblogs.com/haippy/p/3280643.html
 
 ### 运行时打印对象，模板参数的类型
 使用boost库的TypeIndex库。

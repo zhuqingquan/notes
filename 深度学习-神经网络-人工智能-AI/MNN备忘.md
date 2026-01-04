@@ -45,3 +45,10 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE:String=Debug -DMNN_BUILD_DEMO=ON -DMNN_BU
 | -- | -- | -- | -- |
 | 网络结构 | schema/current/MNN_generated.h | MNN文件内结构体以及如何表达网络结构的相关类 | struct MNN::Net |
 | OpenCL | source/backend/opencl/core/OpenCLBackend.cpp | opencl backend。注册Runtime的Creator。使用CLRuntime类封装OpenCLRuntime类。 | OpenCLBackend、CLRuntime |
+
+## MNN模型转换
+```shell
+pip install mnn
+export PATH=/home/xmagic/anaconda3/envs/tts/bin/:$PATH
+mnnconvert -f ONNX --modelFile kokoro-v1.1-zh.onnx --fp16 --MNNModel kokoro-v1.1-zh.mnn --bizCode biz
+```

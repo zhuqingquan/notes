@@ -161,17 +161,26 @@ pkt.pts = (double)(frame_index*calc_duration) / (double)(av_q2d(time_base1)*AV_T
 + 3.x之前版本所用的AVStream.codec已经废弃。[参考](https://blog.51cto.com/fengyuzaitu/1983001)
  
 ## 命令行命令备忘
+### 编码参数汇总
+-c:v 设置视频编码器类型
+-b:v 设置视频编码码率
+-bf H264编码设置B帧数量：-bf 0
+-g 设置GOP帧数
+-slices 设置Slice个数
+[FFmpeg X264编码参数](https://zhuanlan.zhihu.com/p/410825223)
+
+
 解码音频文件并转换成PCM保存
-```
+```shell
 // 转换成2 channel 48000采样率  short
  ffmpeg -i src.m4a -acodec pcm_s16le -f s16le -ar 48000 -ac 2 out-ch2-48000-short.pcm
 ```
 解码视频或者图片保存成argb
-```
+```shell
 ffmpeg -i input.jpeg -pix_fmt rgba output.tiff
 ```
 将文件夹内的多个图片文件按顺序合并成一个视频文件
-```
+```shell
 // 将多个PNG图片按顺序合并成视频文件
 // -vf"format=yuva420p”告诉ffmpeg输出WebM视频时使用透明度通道
 // -c:v libvpx选择WebM视频编码器
@@ -184,7 +193,7 @@ ffmpeg -framerate 25 -i images/image_%04d.png -vf
 ffmpeg -framerate 25 -i ./%d.png -vf "format=yuva420p" -c:v libx264 -auto-alt-ref 0 -crf 10 -b:v 4M fore.h264
 ```
 将视频转换为 WebM 并添加透明背景，带抠绿幕
-```
+```shell
 // -c:v 选项指定使用 vp9 编码器进行视频编码
 // -pix_fmt 选项指定像素格式为 yuva420p，也就是包括 alpha 通道的格式。
 // -auto-alt-ref 选项设置参考帧（reference frames）的数量。
@@ -196,18 +205,18 @@ ffmpeg -i input-video.mp4 -c:v libvpx-vp9 -pix_fmt yuva420p -auto-alt-ref 0 -vf 
 `ffmpeg.exe -s 2560x720 -f rawvideo -pix_fmt yuv420p -i tmp.yuv420 -r 25 tmp.mp4`
 编码yuv+pcm数据成MP4文件
 `ffmpeg.exe -f rawvideo -s 1080x1920 -pix_fmt yuv420p -i tmp-1-1080x1920-2.yuv420 -ar 48000 -channels 2 -f s16le -i tmp-1.pcm -r 25 tmp-1.mp4`
-使用ffprobo查看所有帧信息
-```
+使用ffprobe查看所有帧信息
+```shell
  ffprobe.exe -show_frames f25b56750b2694cf2a4b1f3f116e8103.mp3
 ```
 从网络地址中拉流并保存成文件
-```
+```shell
 ffmpeg -i https://beauty-tx-hls.meituan.net/mtlr/841895_cd8a7_b6df3974ef2f492_ND1080p.m3u8 -codec copy t.ts
 // 保存成mp4, 录制600s
 ffmpeg -y -i "rtmp://beauty-tx-rtmp.meituan.net/mtlr/1130991_1141ef_641c29bc00f140c_ND1080p" -vcodec copy -t 600 -f mp4 /d/dump-meituan-linux-server.mp4
 ```
 混画
-```
+```shell
 # 左右分屏显示2个文件
 ffmpeg -i D:\data_for_test\绿牌蓝底\1.mp4 -i "D:\临时调试\20250804\output-4 (12).mp4" -filter_complex "[0:v][1:v]hstack=inputs=2" -c:v libx264 -preset fast -crf 23 "D:\临时调试\20250804\merge-1.mp4"
 # 将一个视频叠加在另一个视频上面显示，并且在上层的视频半透明
@@ -217,51 +226,51 @@ ffmpeg -i ~/data_for_test_xmagicsdk/android/25064_15097/test/output.mp4 -i %d.jp
 ffmpeg -i D:\59b05ab48bf73e56d41e638e8413f699.jpg -f rawvideo -pixel_format rgba -video_size 748x960 -i D:\dump_ai_org-101879.rgb -filter_complex "[1:v]scale=w=748:h=960:force_original_aspect_ratio=decrease[ckout];[0:v][ckout]overlay=x=W-w-10:y=0[out]" -map "[out]" -movflags faststart a.mp4
 ```
 转码--降低分辨率--音频轨道复制
-```
+```shell
 ffmpeg -i %%v  -vf scale=720:1280 -preset slow -crf 18 -acodec copy  "720p/%%~nv.mp4"
 // bat脚本，批量转换
 for /R %%v IN (*.mp4) do ( ffmpeg -i %%v  -vf scale=720:1280 -preset slow -crf 18 -acodec copy  "720p\%%~nv.mp4")
 ```
 批量转换-将jpg转成png
-```
+```shell
 find ./ -name  "*.jpg" -type f -exec ffmpeg -i {} {}.png \;
 ```
 使用ffprobe计算视频中的总帧数
-```
+```shell
 ffprobe.exe -v error -count_frames -select_streams v:0 -show_entries stream=nb_read_frames -of default=nokey=1:noprint_wrappers=1 fore.h264
 ```
 从a.mp4的第10分钟开始截取60s的数据
-```
+```shell
 ffmpeg -ss 00:10:00.000 -t 60 -i a.mp4 a-1.mp4
 ```
 linux捕抓屏幕录制输出到虚拟摄像头v4l2loopback中
-```
+```shell
 ffmpeg -f x11grab -select_region 1 -show_region 1 -framerate 25 -i $DISPLAY -vf format=yuv420p -f v4l2 /dev/video0
 ```
 windows将捕抓摄像头+麦克风数据编码成mp4
-```
+```shell
 # Windows
 ffmpeg -f dshow -i video="Integrated Camera":audio="麦克风阵列 (适用于数字麦克风的英特尔® 智音技术)" -vcodec "h264_nvenc" rec_camera.mp4
 # linux v4l2
 ffmpeg -f v4l2 -i /dev/video0 -vcodec libx264 ~/record.mp4
 ```
 将普通2D视频转换成左右3D视频
-```
+```shell
 # shift 30ms for source video file
 ffmpeg -ss 00:00:00.034 -i $1 -vcodec copy -acodec copy tmp_short.mp4
 
 ffmpeg -i $1 -vf "movie=./tmp_short.mp4 [in1]; [in]pad=iw*2:ih:iw:0[in0]; [in0][in1] overlay=0:0 [out]" -vcodec libx264 -preset medium -b:v 9200k -r:v 25 -f mp4 lr-3D.mp4
 ```
 将ass文件的字幕绘制到视频文件上
-```
+```shell
 ffmpeg -i video.mp4 -vf ass=subtitle.ass -y dest.mp4
 ```
 将ass文件内容嵌入到视频文件内，由播放器绘制
-```
+```shell
 Ffmpeg -i video.mp4 -i subtitle.ass -c:v copy -c:a copy -c:s ass -y dest.mkv
 ```
 摄像头相关-linux
-```
+```shell
 # 打开摄像头播放 -framerate 30 -video_size hd720
 ffplay -f video4linux2 /dev/video0
 # 打印摄像头支持的格式
