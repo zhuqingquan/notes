@@ -26,8 +26,8 @@ find 路径 -type f -atime +1 -print0 | xargs -0 -n 100 rm -f
 
 #### 文件传输SCP
 
-本地文件发送到远程主机上：scp -P 22 -r src\_local username\@remote\_host:/path
-读取远程主机上文件到本地：scp -P 22 -r username\@remote\_host:/path dst\_local
+本地文件发送到远程主机上：`scp -P 22 -r src_local username@remote_host:path`
+读取远程主机上文件到本地：`scp -P 22 -r username@remote_host:path dst_local`
 
 #### 查看或者更新libc版本
 
@@ -60,6 +60,11 @@ make
     sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 120 --slave /usr/bin/g++ g++ /usr/bin/g++-12 --slave /usr/bin/gcov gcov /usr/bin/gcov-12
 
     sudo update-alternatives --config gcc
+
+#### 查找系统中是否安装了特定的依赖库
+```shell
+ldconfig -p | grep -E "xcb-xfixes|xcb-shape"
+```
 
 #### 缺少头文件或者so时使用apt-file进行搜索需要安装的包
 
@@ -839,9 +844,9 @@ Add the swap file details to /etc/fstab so it will be available at bootup:
 ```shell
 # 查看CPU使用率
 top
-# 查看GPU使用率
+# 查看GPU使用率 比如rknn、gpu
 cat /sys/class/devfreq/fb000000.gpu/load
-# 查看NPU使用率
+# 查看NPU使用率 比如rknn、gpu
 cat /sys/class/devfreq/fdab0000.npu/load
 # 查看网络进出流量
  cat /proc/pid/net/dev
