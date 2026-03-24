@@ -99,6 +99,8 @@ ResNet-34 from `Deep Residual Learning for Image Recognition` <https://arxiv.org
     ollama rm llama3.1
     # 查看所有安装的模型
     ollama list
+    # 停止ollama serve
+    sudo systemctl stop ollama.service
 ```
 
 ## 模型量化
