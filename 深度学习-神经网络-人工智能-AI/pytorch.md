@@ -3,6 +3,7 @@
  * @Date: 2025-07-08 12:10:55
  * @FilePath: /notes/深度学习-神经网络-人工智能-AI/pytorch.md
 -->
+# pytorch
 ## 源码编译安装
 ### C++代码的编译结构
 | cmake文件 | 项目 | 库 | 说明 |
@@ -28,4 +29,15 @@ USE_FLASH_ATTENTION=OFF DEBUG=1 MAX_JOBS=8 python setup.py develop
 #### 只编译C++部分
 ```
 cmake -S . -B build_cpp -DCMAKE_BUILD_TYPE:String=Debug -DUSE_FLASH_ATTENTION=OFF
+```
+
+# vllm
+## wheel安装
+```
+# CUDA 11.8
+pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu118
+# CUDA 12.1
+pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu121
+# CUDA 12.4
+pip install torch==2.5.0 torchvision==0.20.0 torchaudio==2.5.0 --index-url https://download.pytorch.org/whl/cu124
 ```
